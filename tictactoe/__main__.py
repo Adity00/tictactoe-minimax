@@ -5,6 +5,7 @@ Runs 10-game tournament vs Random opponent (assignment requirement).
 
 import sys
 from .game_runner import run_tournament, print_summary
+from .gui import launch_gui
 
 
 def main():
@@ -26,8 +27,11 @@ def main():
             # Quick demo: 3 games with board output
             results = run_tournament(3, verbose=True)
             print_summary(results)
+        elif sys.argv[1] == "gui":
+            # Launch GUI
+            launch_gui()
         else:
-            print("Usage: python -m tictactoe [tournament [num_games] [--verbose]] | [demo]")
+            print("Usage: python -m tictactoe [tournament [num_games] [--verbose]] | [demo] | [gui]")
             sys.exit(1)
     else:
         # Default: run 10-game tournament
