@@ -6,6 +6,7 @@ from .board import Board, Player, GameResult
 from .minimax import MinimaxAI
 from .random_player import RandomPlayer
 from .game_runner import run_tournament, print_summary
+from .gui import launch_gui
 
 
 def print_board_with_indices():
@@ -112,15 +113,16 @@ def main_menu():
         print(f"\n{'='*40}")
         print("TIC-TAC-TOE MINIMAX AI")
         print(f"{'='*40}")
-        print("1. Human vs AI (AI as O, Human as X)")
-        print("2. Human vs AI (AI as X, Human as O)")
-        print("3. Human vs Random")
+        print("1. Human vs AI (AI as O, Human as X) - CLI")
+        print("2. Human vs AI (AI as X, Human as O) - CLI")
+        print("3. Human vs Random - CLI")
         print("4. Run Tournament (10 games: AI vs Random)")
         print("5. Run Tournament with verbose output")
-        print("6. Exit")
+        print("6. Launch GUI (Desktop Window)")
+        print("7. Exit")
         print(f"{'='*40}")
         
-        choice = input("Select option (1-6): ").strip()
+        choice = input("Select option (1-7): ").strip()
         
         if choice == "1":
             play_human_vs_ai(Player.O)
@@ -135,10 +137,13 @@ def main_menu():
             results = run_tournament(10, verbose=True)
             print_summary(results)
         elif choice == "6":
+            print("Launching GUI...")
+            launch_gui()
+        elif choice == "7":
             print("Goodbye!")
             break
         else:
-            print("Invalid choice. Please select 1-6.")
+            print("Invalid choice. Please select 1-7.")
 
 
 if __name__ == "__main__":

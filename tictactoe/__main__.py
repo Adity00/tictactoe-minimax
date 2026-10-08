@@ -4,6 +4,7 @@ Main Entry Point for Tic-Tac-Toe Minimax AI
 
 from .cli import main_menu
 from .game_runner import run_tournament, print_summary
+from .gui import launch_gui
 
 
 def main():
@@ -33,8 +34,11 @@ def main():
             # Quick demo: AI vs Random, 3 games
             results = run_tournament(3, verbose=True)
             print_summary(results)
+        elif sys.argv[1] == "gui":
+            # Launch GUI
+            launch_gui()
         else:
-            print("Usage: python -m tictactoe [tournament [num_games] [--verbose]] | [demo]")
+            print("Usage: python -m tictactoe [tournament [num_games] [--verbose]] | [demo] | [gui]")
             sys.exit(1)
     else:
         # Interactive mode
