@@ -1,8 +1,9 @@
 """
 Tic-Tac-Toe Board Representation and Game Logic
+Core module for the Minimax AI project.
 """
 
-from typing import List, Optional, Tuple
+from typing import List, Optional
 from enum import Enum
 
 

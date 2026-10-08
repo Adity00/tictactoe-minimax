@@ -1,9 +1,10 @@
 """
 Minimax Algorithm with Alpha-Beta Pruning for Tic-Tac-Toe
 Depth-limited to 9 (full game tree for Tic-Tac-Toe)
+Core AI module - unbeatable with perfect play.
 """
 
-from typing import Tuple, Optional
+from typing import Tuple
 from .board import Board, Player, GameResult
 
 
@@ -36,11 +37,8 @@ class MinimaxAI:
         beta = float('inf')
         
         for move in board.available_moves():
-            # Make move
             new_board = board.copy()
             new_board.set(move, self.player)
-            
-            # Evaluate with minimax
             score = self._minimax(new_board, 1, alpha, beta, False)
             
             if score > best_score:
@@ -68,7 +66,7 @@ class MinimaxAI:
         elif result == GameResult.DRAW:
             return DRAW_SCORE
         
-        # Depth limit reached (shouldn't happen in Tic-Tac-Toe with max_depth=9)
+        # Depth limit reached
         if depth >= self.max_depth:
             return DRAW_SCORE
         
@@ -98,19 +96,6 @@ class MinimaxAI:
 
 
 def minimax_move(board: Board, player: Player, max_depth: int = 9) -> Tuple[int, int]:
-    """
-    Convenience function to get best move using minimax.
-    Returns (move_index, score)
-    """
+    """Convenience function to get best move using minimax."""
     ai = MinimaxAI(player, max_depth)
     return ai.get_best_move(board)
-
-
-# For testing/debugging
-if __name__ == "__main__":
-    # Quick test
-    board = Board()
-    ai = MinimaxAI(Player.X)
-    move, score = ai.get_best_move(board)
-    print(f"Best first move for X: {move} (score: {score})")
-    print(f"Nodes evaluated: {ai.nodes_evaluated}")

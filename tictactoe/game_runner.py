@@ -1,39 +1,23 @@
 """
-Game Runner - Plays games between AI and Random Opponent
+Game Runner - Plays 10 games between Minimax AI and Random Opponent
+Fulfills assignment requirement: "Play 10 games vs random opponent"
 """
 
-from typing import List, Tuple
+from typing import List
 from .board import Board, Player, GameResult
 from .minimax import MinimaxAI
-from .random_player import RandomPlayer, create_random_player
+from .random_player import create_random_player
 
 
-class GameResultSummary:
-    """Summary of a single game"""
-    def __init__(self, game_num: int, ai_player: Player, winner: GameResult, 
-                 moves: int, ai_nodes: int):
-        self.game_num = game_num
-        self.ai_player = ai_player
-        self.winner = winner
-        self.moves = moves
-        self.ai_nodes = ai_nodes
-    
-    def __str__(self) -> str:
-        result_str = {
-            GameResult.X_WINS: "X wins",
-            GameResult.O_WINS: "O wins",
-            GameResult.DRAW: "Draw",
-            GameResult.ONGOING: "Ongoing"
-        }[self.winner]
-        return (f"Game {self.game_num}: AI({self.ai_player.value}) - "
-                f"{result_str} in {self.moves} moves, "
-                f"nodes: {self.ai_nodes}")
+def opponent(player: Player) -> Player:
+    """Return the opponent player"""
+    return Player.O if player == Player.X else Player.X
 
 
-def play_game(ai_player: Player, game_num: int, verbose: bool = False) -> GameResultSummary:
+def play_game(ai_player: Player, game_num: int, verbose: bool = False) -> dict:
     """
     Play a single game between Minimax AI and Random opponent.
-    Returns GameResultSummary.
+    Returns dict with game results.
     """
     board = Board()
     ai = MinimaxAI(ai_player)
@@ -70,18 +54,20 @@ def play_game(ai_player: Player, game_num: int, verbose: bool = False) -> GameRe
     if verbose:
         print(f"\nResult: {result.value}")
     
-    return GameResultSummary(game_num, ai_player, result, moves, ai.nodes_evaluated)
+    return {
+        "game_num": game_num,
+        "ai_player": ai_player,
+        "winner": result,
+        "moves": moves,
+        "nodes_evaluated": ai.nodes_evaluated
+    }
 
 
-def opponent(player: Player) -> Player:
-    """Return the opponent player"""
-    return Player.O if player == Player.X else Player.X
-
-
-def run_tournament(num_games: int = 10, verbose: bool = False) -> List[GameResultSummary]:
+def run_tournament(num_games: int = 10, verbose: bool = False) -> List[dict]:
     """
     Run a tournament of games.
-    AI alternates between X and O.
+    AI alternates between X and O (odd games = X, even games = O).
+    Returns list of game results.
     """
     results = []
     
@@ -90,26 +76,27 @@ def run_tournament(num_games: int = 10, verbose: bool = False) -> List[GameResul
     print(f"{'='*50}")
     
     for i in range(1, num_games + 1):
-        # Alternate AI player: odd games = X, even games = O
         ai_player = Player.X if i % 2 == 1 else Player.O
         result = play_game(ai_player, i, verbose)
         results.append(result)
-        print(result)
+        print(f"Game {result['game_num']}: AI({result['ai_player'].value}) - "
+              f"{result['winner'].value.replace('_', ' ').title()} "
+              f"in {result['moves']} moves, nodes: {result['nodes_evaluated']}")
     
     return results
 
 
-def print_summary(results: List[GameResultSummary]):
+def print_summary(results: List[dict]):
     """Print tournament summary"""
     ai_wins = sum(1 for r in results if 
-                  (r.ai_player == Player.X and r.winner == GameResult.X_WINS) or
-                  (r.ai_player == Player.O and r.winner == GameResult.O_WINS))
+                  (r["ai_player"] == Player.X and r["winner"] == GameResult.X_WINS) or
+                  (r["ai_player"] == Player.O and r["winner"] == GameResult.O_WINS))
     ai_losses = sum(1 for r in results if
-                    (r.ai_player == Player.X and r.winner == GameResult.O_WINS) or
-                    (r.ai_player == Player.O and r.winner == GameResult.X_WINS))
-    draws = sum(1 for r in results if r.winner == GameResult.DRAW)
-    total_moves = sum(r.moves for r in results)
-    total_nodes = sum(r.ai_nodes for r in results)
+                    (r["ai_player"] == Player.X and r["winner"] == GameResult.O_WINS) or
+                    (r["ai_player"] == Player.O and r["winner"] == GameResult.X_WINS))
+    draws = sum(1 for r in results if r["winner"] == GameResult.DRAW)
+    total_moves = sum(r["moves"] for r in results)
+    total_nodes = sum(r["nodes_evaluated"] for r in results)
     
     print(f"\n{'='*50}")
     print(f"TOURNAMENT SUMMARY ({len(results)} games)")
@@ -122,7 +109,7 @@ def print_summary(results: List[GameResultSummary]):
     print(f"Avg Nodes:  {total_nodes/len(results):.0f}")
     print(f"{'='*50}")
     
-    # Verify unbeatable
+    # Verify unbeatable (core requirement)
     if ai_losses == 0:
         print("[OK] AI is UNBEATABLE (0 losses)!")
     else:
